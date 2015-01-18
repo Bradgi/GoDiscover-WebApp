@@ -1,0 +1,33 @@
+.cf:before,
+.cf:after {
+	content:" ";
+	display:table;
+}
+
+.cf:after {
+	clear:both;
+}
+
+.shelf {
+	max-width:940px;
+	padding:10px;
+	background:#f0f0f0;
+	margin:0 auto;
+}
+
+.gallery {
+	width:100%;
+}
+
+.gallery-item {
+	float:left;
+	background:#fff;
+	width:25%;
+	padding:1%;
+	padding-bottom:5%;
+	box-shadow:1px 1px 3px rgba(0,0,0,.2);
+}
+
+.gallery-item img {
+	width:100%;
+}
