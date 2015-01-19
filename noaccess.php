@@ -38,7 +38,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dargon Photo Sharing</title>
+    <title>Go Discover</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">

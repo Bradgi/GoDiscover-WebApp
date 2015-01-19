@@ -13,7 +13,7 @@
     Redirect::to('noaccess.php');
   }
 
-  $s3 = new S3('AccessKey', 'SecretKey');
+  $s3 = new S3('Access Key', 'Secret Key');
 
   $pageState = 1;
   $allowedImage = array('jpg', 'jpeg', 'bmp', 'png');
@@ -157,7 +157,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dargon Photo Sharing</title>
+    <title>Go Discover</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
