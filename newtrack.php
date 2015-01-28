@@ -5,21 +5,24 @@
   require_once 'functions/xml.php';
   require_once 'functions/zip.php';
 
-  error_reporting(1);
+  error_reporting(0);
 
   $user = new User();
 
+  // Check if user is logged in.
   if(!$user->isLoggedIn()) {
     Redirect::to('noaccess.php');
   }
 
-  $s3 = new S3('Access Key', 'Secret Key');
+  // Amazon S3 object, needs the access key and secret key to interact with a bucket.
+  $s3 = new S3('Access', 'Secret');
 
-  $pageState = 1;
-  $allowedImage = array('jpg', 'jpeg', 'bmp', 'png');
-  $allowedVideo = array('mp4', 'avi', 'wmv');
-  $allowedAudio = array('mp3', 'wav', 'flac');
+  $pageState = 1; // Defines which page will be displayed, goes from 1 to 3.
+  $allowedImage = array('jpg', 'jpeg', 'bmp', 'png'); // Image formats allowed for upload.
+  $allowedVideo = array('mp4', 'avi', 'wmv'); // Video formats allowed for upload.
+  $allowedAudio = array('mp3', 'wav', 'flac');  // Audio formats allowed for upload.
 
+  // User login functionality.
   if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
       $validate = new Validate();
@@ -40,26 +43,48 @@
         }
       }
     }
+
+    // Checks for inputs and the page state.
     if ($_POST['First']) {
+      // Checks if the track has a name, if it does, proceed with adding a new track.
       if(!empty($_POST['TrackName'])) {
+        // Gets the track name and track description.
         $_SESSION['trackName'] = $_POST['TrackName'];
+        $_SESSION['trackDescription'] = $_POST['TrackDescription'];
+
+        // Setup the paths of the directories to upload files.
         $imgDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/image';
         $videoDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/video';
         $audioDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/audio';
         $mapDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/map';
         $mainDir = './godiscover_tmp/'.$_SESSION['trackName'];
+        $zipsDir = './zips';
+
+        // Create the directories.
         mkdir($imgDir, 0777, true);
         mkdir($videoDir, 0777, true);
         mkdir($audioDir, 0777, true);
         mkdir($mapDir, 0777, true);
+        mkdir($zipsDir, 0777, true);
+
+        // Gets the map and track image files.
         $_SESSION['mapFile'] = $mapDir.'/'.basename($_FILES['MapFile']['name']);
         $_SESSION['trackFile'] = $imgDir.'/'.basename($_FILES['TrackFile']['name']);
-        move_uploaded_file($_FILES['MapFile']['tmp_name'], $_SESSION['mapFile']);
-        move_uploaded_file($_FILES['TrackFile']['tmp_name'], $_SESSION['trackFile']);
+
+        $mapFile = $_FILES['MapFile']['tmp_name'];
+        $trackFile = $_FILES['TrackFile']['tmp_name'];
+
+        // Uploads the map and track image files to its directories.
+        move_uploaded_file($mapFile, $_SESSION['mapFile']);
+        move_uploaded_file($trackFile, $_SESSION['trackFile']);
+
+        // Goes to the next page state.
+        $pageState = 2;
       }
-      if(!empty($_POST['TrackDescription'])) {
-        $_SESSION['trackDescription'] = $_POST['TrackDescription'];
-      }
+    }
+    if ($_POST['MapXY']) {
+      $_SESSION['selectedSpots']++;
+      array_push($_SESSION['spotsXY'], array($_POST['MapImage_x'], $_POST['MapImage_y']));
       $pageState = 2;
     }
     if ($_POST['Second']) {
@@ -139,11 +164,6 @@
         }
         $pageState = 3;
       }
-    }
-    if ($_POST['MapXY']) {
-      $_SESSION['selectedSpots']++;
-      array_push($_SESSION['spotsXY'], array($_POST['MapImage_x'], $_POST['MapImage_y']));
-      $pageState = 2;
     }
   }
 ?>

@@ -5,11 +5,13 @@
 
 	error_reporting(0);
 
+	// Check if user is logged in, if it's not redirect to main page.
 	$user = new User();
 	if (!$user->isLoggedIn()) {
 		Redirect::to('index.php');
 	}
 
+	// Check for inputs and validate inputs.
 	if (Input::exists()) {
 		if (Token::check(Input::get('token'))) {
 			$validate = new Validate();

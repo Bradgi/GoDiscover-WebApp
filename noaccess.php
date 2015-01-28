@@ -5,6 +5,7 @@
 
   error_reporting(0);
 
+  // Page displayed if user is not allowed to access a page, user login functionality.
   $user = new User();
   if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
@@ -40,11 +41,8 @@
 
     <title>Go Discover</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="../dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
     <link href="dist/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
     <link href="dist/bootstrap/css/theme.css" rel="stylesheet">
 
   </head>
@@ -101,25 +99,20 @@
               <?php
                 }
               ?>
-            </div><!--/.navbar-collapse -->
-          </div><!--/.nav-collapse -->
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="container theme-showcase" role="main">
 
-        <!-- Main jumbotron for a primary marketing message or call to action -->
         <div class="jumbotron">
           <h1>No Access.</h1>
           <p>You don't have permission to use this feature, please log in.</p>
         </div>
 
-      </div> <!-- /container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+      </div>
+      
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="dist/bootstrap/js/bootstrap.min.js"></script>
     <script src="dist/bootstrap/js/docs.min.js"></script>

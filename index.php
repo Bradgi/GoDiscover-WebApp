@@ -7,6 +7,7 @@
 
   $user = new User();
 
+  // Initialize session variables for the user.
   $_SESSION['trackName'] = '';
   $_SESSION['trackDescription'] = '';
   $_SESSION['trackFile'] = '';
@@ -18,6 +19,7 @@
   $_SESSION['spotsName'] = Array();
   $_SESSION['spotsInformation'] = Array();
 
+  // User login functionality.
   if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
       $validate = new Validate();
@@ -52,11 +54,8 @@
 
     <title>Go Discover</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="../dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
     <link href="dist/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
     <link href="dist/bootstrap/css/theme.css" rel="stylesheet">
 
   </head>
@@ -113,25 +112,20 @@
               <?php
                 }
               ?>
-            </div><!--/.navbar-collapse -->
-          </div><!--/.nav-collapse -->
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="container theme-showcase" role="main">
 
-        <!-- Main jumbotron for a primary marketing message or call to action -->
         <div class="jumbotron">
           <h1>Welcome!</h1>
           <p>Just use the buttons above to do things.</p>
         </div>
 
-      </div> <!-- /container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+      </div>
+      
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="dist/bootstrap/js/bootstrap.min.js"></script>
     <script src="dist/bootstrap/js/docs.min.js"></script>
