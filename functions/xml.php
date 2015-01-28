@@ -7,7 +7,7 @@
 		$doc->appendChild($trackElement);
 
 		$versionElement = $doc->createElement("version");
-		$versionElement->appendChild($doc->createTextNode("1.0"));
+		$versionElement->appendChild($doc->createTextNode("1"));
 		$trackElement->appendChild($versionElement);
 
 		$nameElement = $doc->createElement("name");
@@ -101,7 +101,7 @@
 			$fileElement->appendChild($fileNameElement);
 
 			$fileVersion = $doc->createElement("version");
-			$fileVersion->appendChild($doc->createTextNode("1.0"));
+			$fileVersion->appendChild($doc->createTextNode("1"));
 			$fileElement->appendChild($fileVersion);
 
 			$indexElement->appendChild($fileElement);
@@ -122,7 +122,7 @@
 			$fileElement->appendChild($fileNameElement);
 
 			$fileVersion = $doc->createElement("version");
-			$fileVersion->appendChild($doc->createTextNode("1.0"));
+			$fileVersion->appendChild($doc->createTextNode("1"));
 			$fileElement->appendChild($fileVersion);
 
 			$indexElement->appendChild($fileElement);
@@ -132,9 +132,9 @@
 	}
 
 	function updateIndexXML($trackName, $version) {
-
+		//TODO: Update a XML with a new version of a track.
 	}
 
 	function parseXML($xmlType) {
-
+		//TODO: Parse the info form a XML to display it on the browser.
 	}

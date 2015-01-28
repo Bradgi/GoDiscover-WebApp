@@ -4,6 +4,7 @@
   require_once 'functions/S3.php';
   require_once 'functions/xml.php';
   require_once 'functions/zip.php';
+  require_once 'functions/image.php';
 
   error_reporting(0);
 
@@ -45,6 +46,7 @@
     }
 
     // Checks for inputs and the page state.
+    // Triggered when the first page is submitted.
     if ($_POST['First']) {
       // Checks if the track has a name, if it does, proceed with adding a new track.
       if(!empty($_POST['TrackName'])) {
@@ -67,50 +69,67 @@
         mkdir($mapDir, 0777, true);
         mkdir($zipsDir, 0777, true);
 
-        // Gets the map and track image files.
-        $_SESSION['mapFile'] = $mapDir.'/'.basename($_FILES['MapFile']['name']);
+        // Gets the track image files.
         $_SESSION['trackFile'] = $imgDir.'/'.basename($_FILES['TrackFile']['name']);
-
-        $mapFile = $_FILES['MapFile']['tmp_name'];
         $trackFile = $_FILES['TrackFile']['tmp_name'];
 
         // Uploads the map and track image files to its directories.
-        move_uploaded_file($mapFile, $_SESSION['mapFile']);
+        process_image_upload($_FILES['MapFile']['tmp_name'], $_FILES['MapFile']['name'], $mainDir, $mapDir);
+        $_SESSION['mapFile'] = $mapDir.'/'.preg_replace('{\\.[^\\.]+$}', '.jpg', $_FILES['MapFile']['name']);
         move_uploaded_file($trackFile, $_SESSION['trackFile']);
 
         // Goes to the next page state.
         $pageState = 2;
       }
     }
+    // Triggered when there is a click on the map.
     if ($_POST['MapXY']) {
+      // Increments the spot counter and gets the X and Y coordinates from the image for each spot.
       $_SESSION['selectedSpots']++;
       array_push($_SESSION['spotsXY'], array($_POST['MapImage_x'], $_POST['MapImage_y']));
+
+      // Refreshes in the same page state.
       $pageState = 2;
     }
+    // Triggered when the second page is submitted.
     if ($_POST['Second']) {
+      // Goes to the next page state.
       $pageState = 3;
     }
+    // Triggered when the last page is submitted or when content is uploaded.
     if ($_POST['Done']) {
+      // Reference of the set directories.
         $imgDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/image';
         $videoDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/video';
         $audioDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/audio';
         $mapDir = './godiscover_tmp/'.$_SESSION['trackName'].'/res/map';
         $mainDir = './godiscover_tmp/'.$_SESSION['trackName'];
+
+      // If is triggered when the page is submitted, else when some content is uploaded.
       if (isset($_POST['Finish'])) {
+        // Sets the latitude and longitude, names and information for the spots.
         for ($i = 0; $i < sizeof($_SESSION['spotsXY']); $i++) {
           $namingIndex = $i+1;
           array_push($_SESSION['spotsLatLong'], array($_POST['Latitude'.$namingIndex], $_POST['Longitude'.$namingIndex]));
           array_push($_SESSION['spotsName'], $_POST['SpotName'.$namingIndex]);
           array_push($_SESSION['spotsInformation'], $_POST['Information'.$namingIndex]);
         }
+
+        // Sets the xml name, zip name, and the track directory.
         $XMLName = $mainDir.'/'.$_SESSION['trackName'].'.xml';
         $ZipName = './zips/'.$_SESSION['trackName'].'.zip';
         $sourceDir = './godiscover_tmp/'.$_SESSION['trackName'].'/';
+
+        // Creates the track xml, create the zip of the track and adds the entry for the zip on the index xml.
         createTrackXML($_SESSION['trackName'], $_SESSION['trackDescription'], $_SESSION['trackFile'], $_SESSION['mapFile'], $_SESSION['spotsXY'], $_SESSION['spotsContent'], $_SESSION['spotsLatLong'], $_SESSION['spotsName'], $_SESSION['spotsInformation'], $XMLName);
         createZip($sourceDir, $ZipName, $_SESSION['trackName'].'.zip');
         createIndexXML($_SESSION['trackName'].'.zip');
-        S3::putObject($s3->inputFile($ZipName), 'godiscover', $_SESSION['trackName'].'.zip', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
-        S3::putObject($s3->inputFile('./zips/index.xml'), 'godiscover', 'index.xml', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
+
+        // Pushes the index xml and the track zip to the Amazon S3 bucket.
+        S3::putObject($s3->inputFile($ZipName), 'Bucket', $_SESSION['trackName'].'.zip', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
+        S3::putObject($s3->inputFile('./zips/index.xml'), 'Bucket', 'index.xml', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
+
+        // Clears the users session variables.
         $_SESSION['trackName'] = '';
         $_SESSION['trackDescription'] = '';
         $_SESSION['trackFile'] = '';
@@ -121,14 +140,22 @@
         $_SESSION['spotsLatLong'] = Array();
         $_SESSION['spotsName'] = Array();
         $_SESSION['spotsInformation'] = Array();
+
+        // Go back to the first page state.
         $pageState = 1;
       } else {
+        // Iterate through all the spots.
         for ($i = 0; $i < sizeof($_SESSION['spotsXY']); $i++) {
           $namingIndex = $i+1;
+
+          // Checks to which spot the content being uploaded belongs to.
           if ($_POST['AddContent'.$namingIndex]) {
+            // Separates the file extension from the file being uploaded.
             $contentType = '';
             $fileExtension = explode('.', $_FILES['Content'.$namingIndex]['name']);
             $fileExtension = strtolower(end($fileExtension));
+
+            // Checks if the extension is on the allowed array for any of the types of content, and checks to which type it belongs to.
             if (in_array($fileExtension, $allowedImage)) {
               $contentType = 'image';
               $contentFile = $imgDir.'/'.basename($_FILES['Content'.$namingIndex]['name']);
@@ -141,10 +168,16 @@
             } else {
               $contentType = 'error';
             }
+
+            // Checks if there was no problem with the image type.
             if ($contentType != 'error') {
+              // Gets the content name and story and moves it to the upload folder.
               $contentName = $_POST['ContentName'.$namingIndex];
               $contentStory = $_POST['ContentStory'.$namingIndex];
               move_uploaded_file($_FILES['Content'.$namingIndex]['tmp_name'], $contentFile);
+
+              // Sets the content name, story, type and path on a temporary array.
+              // (The if applies if that is the first time there is content being added, else otherwise).
               $tempArray = Array();
               if (sizeof($_SESSION['spotsContent'][$i]) == 0) {
                 array_push($tempArray, $contentFile);
@@ -158,10 +191,13 @@
                 array_push($tempArray, $contentStory);
                 array_push($tempArray, $contentType);
               }
+
+              // Adds the temporary array to the session variables for the content.
               $_SESSION['spotsContent'][$i] = $tempArray;
             }
           }
         }
+        // Refreshes the current page after adding the content.
         $pageState = 3;
       }
     }
