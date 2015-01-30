@@ -16,7 +16,7 @@
   }
 
   // Amazon S3 object, needs the access key and secret key to interact with a bucket.
-  $s3 = new S3('Access', 'Secret');
+  $s3 = new S3('AKIAIALAOJCSMKBD4MBQ', 'tvgxdRNfmtqpJRCn51/dwdVsN02h9iHH/UFbjc6W');
 
   $pageState = 1; // Defines which page will be displayed, goes from 1 to 3.
   $allowedImage = array('jpg', 'jpeg', 'bmp', 'png'); // Image formats allowed for upload.
@@ -49,6 +49,19 @@
     // Triggered when the first page is submitted.
     if ($_POST['First']) {
       // Checks if the track has a name, if it does, proceed with adding a new track.
+
+      // Clears the users session variables.
+      $_SESSION['trackName'] = '';
+      $_SESSION['trackDescription'] = '';
+      $_SESSION['trackFile'] = '';
+      $_SESSION['mapFile'] = '';
+      $_SESSION['selectedSpots'] = 0;
+      $_SESSION['spotsXY'] = Array();
+      $_SESSION['spotsContent'] = Array();
+      $_SESSION['spotsLatLong'] = Array();
+      $_SESSION['spotsName'] = Array();
+      $_SESSION['spotsInformation'] = Array();
+
       if(!empty($_POST['TrackName'])) {
         // Gets the track name and track description.
         $_SESSION['trackName'] = $_POST['TrackName'];
@@ -128,18 +141,6 @@
         // Pushes the index xml and the track zip to the Amazon S3 bucket.
         S3::putObject($s3->inputFile($ZipName), 'Bucket', $_SESSION['trackName'].'.zip', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
         S3::putObject($s3->inputFile('./zips/index.xml'), 'Bucket', 'index.xml', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
-
-        // Clears the users session variables.
-        $_SESSION['trackName'] = '';
-        $_SESSION['trackDescription'] = '';
-        $_SESSION['trackFile'] = '';
-        $_SESSION['mapFile'] = '';
-        $_SESSION['selectedSpots'] = 0;
-        $_SESSION['spotsXY'] = Array();
-        $_SESSION['spotsContent'] = Array();
-        $_SESSION['spotsLatLong'] = Array();
-        $_SESSION['spotsName'] = Array();
-        $_SESSION['spotsInformation'] = Array();
 
         // Go back to the first page state.
         $pageState = 1;
@@ -356,7 +357,7 @@
                 <label for="ContentStory<?php echo $coordIndex;?>">Content Story</label>
                 <input type="text" class="form-control" name="ContentStory<?php echo $coordIndex;?>" id="ContentStory<?php echo $coordIndex;?>" placeholder="Content Story.">
                 <p> </p>
-                <input type="submit" class="btn btn-primary" value="Add More" name="AddContent<?php echo $coordIndex;?>">
+                <input type="submit" class="btn btn-primary" value="Add Content" name="AddContent<?php echo $coordIndex;?>">
               </div>
             <?php  $coordIndex++;} ?>
             <input type="hidden" class="form-control" name="Done" id="Done" value='Hidden'>

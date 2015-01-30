@@ -1,4 +1,6 @@
 <?php
+	$s3 = new S3('AKIAIALAOJCSMKBD4MBQ', 'tvgxdRNfmtqpJRCn51/dwdVsN02h9iHH/UFbjc6W');
+
 	function createTrackXML($trackName, $trackDescription, $trackFile, $mapFile, $spotsXY, $spotsContent, $spotsLatLong, $spotsName, $spotsInformation, $xmlFileName) {
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
@@ -15,11 +17,11 @@
 		$trackElement->appendChild($nameElement);
 
 		$picElement = $doc->createElement("picPath");
-		$picElement->appendChild($doc->createTextNode($trackFile));
+		$picElement->appendChild($doc->createTextNode(str_replace('./godiscover_tmp', '', $trackFile)));
 		$trackElement->appendChild($picElement);
 
 		$mapElement = $doc->createElement("mapPath");
-		$mapElement->appendChild($doc->createTextNode($mapFile));
+		$mapElement->appendChild($doc->createTextNode(str_replace('./godiscover_tmp', '', $mapFile)));
 		$trackElement->appendChild($mapElement);
 
 		$tdescriptionElement = $doc->createElement("description");
@@ -72,7 +74,7 @@
 				$resourceElement->appendChild($storyElement);
 
 				$contentPathElement = $doc->createElement("path");
-				$contentPathElement->appendChild($doc->createTextNode($spotsContent[$i][$j]));
+				$contentPathElement->appendChild($doc->createTextNode(str_replace('./godiscover_tmp', '', $spotsContent[$i][$j])));
 				$resourceElement->appendChild($contentPathElement);
 
 				$contentElement->appendChild($resourceElement);
@@ -89,7 +91,11 @@
 	function createIndexXML($zipName) {
 		$doc = new DOMDocument();
 
-		if ($doc->load('./zips/index.xml')) {
+		if (S3::getObject('godiscover', 'index.xml')) {
+			S3::getObject('godiscover', 'index.xml', './zips/index.xml');
+
+			$doc->load('./zips/index.xml');
+
 			$doc->formatOutput = true;
 
 			$indexElement = $doc->getElementsByTagName('index')->item(0);

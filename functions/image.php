@@ -7,7 +7,7 @@
 		list($source_width, $source_height, $source_type) = getimagesize($source);
 		switch ($source_type) {
 			case IMAGETYPE_JPEG:
-				$source_gd_image = imagecreatefromjpeg($source);
+				$source_gd = imagecreatefromjpeg($source);
 				break;
 			case IMAGETYPE_PNG:
 				$source_gd = imagecreatefrompng($source);

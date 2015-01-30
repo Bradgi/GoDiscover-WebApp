@@ -17,9 +17,11 @@
 					continue;
 				}
 				if (is_dir($file) === true) {
-					$zip->addEmptyDir(str_replace($source.'/','',$file.'/'));
+					$tempFile = str_replace('./godiscover_tmp','',$file.'/');
+					$zip->addEmptyDir(str_replace($source.'/','',$tempFile));
 				} else if (is_file($file) === true) {
-					$zip->addFromString(str_replace($source.'/','',$file), file_get_contents($file));
+					$tempFile = str_replace('./godiscover_tmp','',$file);
+					$zip->addFromString(str_replace($source.'/','',$tempFile), file_get_contents($file));
 				}
 			}
 		} else if (is_file($source) === true) {
