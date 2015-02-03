@@ -1,5 +1,5 @@
 <?php
-	$s3 = new S3('AKIAIALAOJCSMKBD4MBQ', 'tvgxdRNfmtqpJRCn51/dwdVsN02h9iHH/UFbjc6W');
+	$s3 = new S3('Access', 'Secret');
 
 	function createTrackXML($trackName, $trackDescription, $trackFile, $mapFile, $spotsXY, $spotsContent, $spotsLatLong, $spotsName, $spotsInformation, $xmlFileName) {
 		$doc = new DOMDocument();

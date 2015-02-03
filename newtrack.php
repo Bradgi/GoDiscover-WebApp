@@ -16,7 +16,7 @@
   }
 
   // Amazon S3 object, needs the access key and secret key to interact with a bucket.
-  $s3 = new S3('AKIAIALAOJCSMKBD4MBQ', 'tvgxdRNfmtqpJRCn51/dwdVsN02h9iHH/UFbjc6W');
+  $s3 = new S3('Access', 'Secret');
 
   $pageState = 1; // Defines which page will be displayed, goes from 1 to 3.
   $allowedImage = array('jpg', 'jpeg', 'bmp', 'png'); // Image formats allowed for upload.
