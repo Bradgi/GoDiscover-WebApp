@@ -1,5 +1,5 @@
 <?php
-	$s3 = new S3('Access', 'Secret');
+	$s3 = new S3('AccessKey', 'SecretKey');
 
 	function createTrackXML($trackName, $trackDescription, $trackFile, $mapFile, $spotsXY, $spotsContent, $spotsLatLong, $spotsName, $spotsInformation, $xmlFileName) {
 		$doc = new DOMDocument();
@@ -91,8 +91,8 @@
 	function createIndexXML($zipName) {
 		$doc = new DOMDocument();
 
-		if (S3::getObject('godiscover', 'index.xml')) {
-			S3::getObject('godiscover', 'index.xml', './zips/index.xml');
+		if (S3::getObject('BucketName', 'index.xml')) {
+			S3::getObject('BucketName', 'index.xml', './zips/index.xml');
 
 			$doc->load('./zips/index.xml');
 

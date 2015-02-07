@@ -16,7 +16,7 @@
   }
 
   // Amazon S3 object, needs the access key and secret key to interact with a bucket.
-  $s3 = new S3('Access', 'Secret');
+  $s3 = new S3('AcessKey', 'SecretKey');
 
   $pageState = 1; // Defines which page will be displayed, goes from 1 to 3.
   $allowedImage = array('jpg', 'jpeg', 'bmp', 'png'); // Image formats allowed for upload.
@@ -139,8 +139,8 @@
         createIndexXML($_SESSION['trackName'].'.zip');
 
         // Pushes the index xml and the track zip to the Amazon S3 bucket.
-        S3::putObject($s3->inputFile($ZipName), 'Bucket', $_SESSION['trackName'].'.zip', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
-        S3::putObject($s3->inputFile('./zips/index.xml'), 'Bucket', 'index.xml', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_RRS);
+        S3::putObject($s3->inputFile($ZipName), 'BucketName', $_SESSION['trackName'].'.zip', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_STANDARD);
+        S3::putObject($s3->inputFile('./zips/index.xml'), 'BucketName', 'index.xml', S3::ACL_PUBLIC_READ, array(), array(), S3::STORAGE_CLASS_STANDARD);
 
         // Go back to the first page state.
         $pageState = 1;
