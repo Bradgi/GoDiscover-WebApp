@@ -120,10 +120,14 @@
 
       // If is triggered when the page is submitted, else when some content is uploaded.
       if (isset($_POST['Finish'])) {
-        // Sets the latitude and longitude, names and information for the spots.
+        // Sets the latitude and longitude, if latitude or longitude is empty, sets both to 0, names and information for the spots.
         for ($i = 0; $i < sizeof($_SESSION['spotsXY']); $i++) {
           $namingIndex = $i+1;
-          array_push($_SESSION['spotsLatLong'], array($_POST['Latitude'.$namingIndex], $_POST['Longitude'.$namingIndex]));
+          if (!empty($_POST['Latitude'.$namingIndex]) && !empty($_POST['Longitude'.$namingIndex])) {
+            array_push($_SESSION['spotsLatLong'], array($_POST['Latitude'.$namingIndex], $_POST['Longitude'.$namingIndex]));
+          } else {
+            array_push($_SESSION['spotsLatLong'], array(0, 0));
+          }
           array_push($_SESSION['spotsName'], $_POST['SpotName'.$namingIndex]);
           array_push($_SESSION['spotsInformation'], $_POST['Information'.$namingIndex]);
         }
